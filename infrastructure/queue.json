@@ -1,0 +1,13 @@
+{
+  "development": {
+    "host": "127.0.0.1",
+    "user": "guest",
+    "password": "guest"
+  },
+  "test": {
+    "password": "test"
+  },
+  "production": {
+    "password": "prod"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "development": {
+    "backendBase": "http://localhost:3000",
+    "emailVerified": "http://localhost:8080/email-verification-result/",
+    "resetPassword": "http://localhost:8080/reset-password/"
+  },
+  "test": {
+    "backendBase": "",
+    "emailVerified": "",
+    "resetPassword": ""
+  },
+  "production": {
+    "backendBase": "",
+    "emailVerified": "",
+    "resetPassword": ""
+  }
+}

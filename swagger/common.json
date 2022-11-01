@@ -1,0 +1,3649 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Moco BaaS - Common Services",
+    "version": "1.6",
+    "description": "Common API for Moco BaaS. Mostly used for Client SDK. Attempt to follow JSON:API v1.0 specification.\n\nPlease note that certain operations are not conformant to JSON:API, please check following flag on each description:\n1. **[non-standard]** implementation doesn't follow JSON:API specification.\n2. **[non-resource]** implementation is action-oriented, data might not available. Please refer to *meta* for further information.",
+    "contact": {
+      "name": "Hash Rekayasa Teknologi",
+      "email": "baas.platform@hash.id"
+    },
+    "license": {
+      "name": "ISV"
+    }
+  },
+  "servers": [
+    {
+      "url": "/services",
+      "description": "default"
+    },
+    {
+      "url": "http://localhost:3000/services",
+      "description": "dev"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "(identityProvider.enabled = false)"
+    },
+    {
+      "name": "Email Verification",
+      "description": "(identityProvider.enabled = false)"
+    },
+    {
+      "name": "Authenticated User",
+      "description": "(identityProvider.enabled = false)"
+    },
+    {
+      "name": "Identity Provider Authentication",
+      "description": "(identityProvider.enabled = true)"
+    },
+    {
+      "name": "Identity Provider Authenticated User",
+      "description": "(identityProvider.enabled = true)"
+    }
+  ],
+  "paths": {
+    "/me": {
+      "get": {
+        "summary": "Current profile",
+        "tags": [
+          "Authenticated User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/profile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/vnd.api+json": {
+                "examples": {
+                  "Invalid access token (it's time to refresh access)": {
+                    "value": {
+                      "errors": [
+                        {
+                          "id": "1609035116017649068",
+                          "status": "401",
+                          "code": "IVACC",
+                          "title": "Invalid access token"
+                        }
+                      ]
+                    }
+                  },
+                  "Other bad auth conditions": {
+                    "value": {
+                      "errors": [
+                        {
+                          "id": "1609035198401324833",
+                          "status": "401",
+                          "code": "BADAUTH",
+                          "title": "The token has been revoked"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "Get current user information.",
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "queryInfo"
+      },
+      "patch": {
+        "summary": "Update current profile",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/profile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "Update current user information.",
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "updateInfo",
+        "tags": [
+          "Authenticated User"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "description": "Profile update",
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "default": "profile"
+                      },
+                      "data": {
+                        "type": "object",
+                        "description": "Any known fields related to user information. In exception for status and password."
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "data"
+                    ]
+                  },
+                  {
+                    "description": "Password update",
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "default": "password"
+                      },
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "oldPassword",
+                          "newPassword"
+                        ],
+                        "properties": {
+                          "oldPassword": {
+                            "type": "string"
+                          },
+                          "newPassword": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "data"
+                    ]
+                  },
+                  {
+                    "description": "OAuth link",
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "default": "link"
+                      },
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "provider",
+                          "oauthKey"
+                        ],
+                        "properties": {
+                          "provider": {
+                            "type": "string",
+                            "enum": [
+                              "facebook",
+                              "twitter",
+                              "google",
+                              "apple"
+                            ]
+                          },
+                          "oauthKey": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        }
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "data"
+                    ]
+                  },
+                  {
+                    "description": "OAuth unlink",
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "default": "unlink"
+                      },
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "provider"
+                        ],
+                        "properties": {
+                          "provider": {
+                            "type": "string",
+                            "enum": [
+                              "facebook",
+                              "twitter",
+                              "google",
+                              "apple"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "data"
+                    ]
+                  },
+                  {
+                    "description": "Saving subscription token",
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "default": "subscribe"
+                      },
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "token"
+                        ],
+                        "properties": {
+                          "token": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "data"
+                    ]
+                  },
+                  {
+                    "description": "Revoking subscription token",
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "default": "unsubscribe"
+                      },
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "token"
+                        ],
+                        "properties": {
+                          "token": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "data"
+                    ]
+                  }
+                ],
+                "type": "object"
+              },
+              "examples": {
+                "Update profile": {
+                  "value": {
+                    "scope": "profile",
+                    "data": {
+                      "name": "Osman Bostancı"
+                    }
+                  }
+                },
+                "Update password": {
+                  "value": {
+                    "scope": "password",
+                    "data": {
+                      "oldPassword": "myoldpassword",
+                      "newPassword": "mynewpassword"
+                    }
+                  }
+                },
+                "Link social account": {
+                  "value": {
+                    "scope": "link",
+                    "data": {
+                      "provider": "facebook",
+                      "oauthKey": "2d656208-2a1f-4407-b78c-1946fa14af11"
+                    }
+                  }
+                },
+                "Unlink social account": {
+                  "value": {
+                    "scope": "unlink",
+                    "data": {
+                      "provider": "facebook"
+                    }
+                  }
+                },
+                "Subscribe to push notif": {
+                  "value": {
+                    "scope": "subscribe",
+                    "data": {
+                      "token": "subscription-token"
+                    }
+                  }
+                },
+                "Unsubscribe from push notif": {
+                  "value": {
+                    "scope": "unsubscribe",
+                    "data": {
+                      "token": "subscription-token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": "Use scope in the request body to identify operation context:\n1. profile (update profile)\n2. password (update password)\n3. link (link social account / OAuth entity)\n4. unlink (unlink social account)\n5. subscribe (subscribe to push notifications)\n6. unsubscribe (unsubscribe from push notifications)"
+        }
+      },
+      "delete": {
+        "summary": "Logout",
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "content": {
+              "application/vnd.api+json": {}
+            }
+          },
+          "400": {
+            "description": "Unknown Token"
+          }
+        },
+        "description": "Revoke local access.",
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "logout",
+        "tags": [
+          "Authenticated User"
+        ]
+      },
+      "parameters": []
+    },
+    "/idp/me": {
+      "get": {
+        "summary": "Current profile",
+        "tags": [
+          "Identity Provider Authenticated User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/idp_profile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/vnd.api+json": {
+                "examples": {
+                  "Invalid access token (it's time to refresh access)": {
+                    "value": {
+                      "errors": [
+                        {
+                          "id": "1609034336830",
+                          "status": "401",
+                          "code": "IVACC",
+                          "title": "Invalid access token"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "Get current user information.",
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "queryInfo",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "yes"
+              ]
+            },
+            "in": "query",
+            "name": "include_userinfo_claims",
+            "description": "Include ID provider account claims in response."
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create local profile",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/idp_profile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "Create current user information on MBaaS app.\n\nUser's `email` and `name` will be copied automatically from their ID provider account.",
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "createInfo",
+        "tags": [
+          "Identity Provider Authenticated User"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "description": "User information. Please refer to the User columns in management console."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update local profile",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/idp_profile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "Update current user information on MBaaS app.",
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "updateInfo",
+        "tags": [
+          "Identity Provider Authenticated User"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "description": "Profile update",
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "default": "profile"
+                      },
+                      "data": {
+                        "type": "object",
+                        "description": "User information. Please refer to the User columns in management console."
+                      },
+                      "include_userinfo_claims": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "data"
+                    ]
+                  },
+                  {
+                    "description": "Saving subscription token",
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "default": "subscribe"
+                      },
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "token"
+                        ],
+                        "properties": {
+                          "token": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "include_userinfo_claims": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "data"
+                    ]
+                  },
+                  {
+                    "description": "Revoking subscription token",
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "default": "unsubscribe"
+                      },
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "token"
+                        ],
+                        "properties": {
+                          "token": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "include_userinfo_claims": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "data"
+                    ]
+                  }
+                ],
+                "type": "object"
+              },
+              "examples": {
+                "Update profile": {
+                  "value": {
+                    "scope": "profile",
+                    "data": {
+                      "name": "Osman Bostancı"
+                    },
+                    "include_userinfo_claims": true
+                  }
+                },
+                "Subscribe to push notif": {
+                  "value": {
+                    "scope": "subscribe",
+                    "data": {
+                      "token": "subscription-token"
+                    },
+                    "include_userinfo_claims": false
+                  }
+                },
+                "Unsubscribe from push notif": {
+                  "value": {
+                    "scope": "unsubscribe",
+                    "data": {
+                      "token": "subscription-token"
+                    },
+                    "include_userinfo_claims": false
+                  }
+                }
+              }
+            }
+          },
+          "description": "Use scope in the request body to identify operation context:\n1. profile (update profile)\n2. subscribe (subscribe to push notifications)\n3. unsubscribe (unsubscribe from push notifications)"
+        }
+      },
+      "delete": {
+        "summary": "Logout",
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "content": {
+              "application/vnd.api+json": {}
+            }
+          },
+          "400": {
+            "description": "Unknown Token"
+          }
+        },
+        "description": "Revoke ID provider access.",
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "logout",
+        "tags": [
+          "Identity Provider Authenticated User"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "refresh_token",
+            "required": true
+          }
+        ]
+      },
+      "parameters": []
+    },
+    "/auth": {
+      "get": {
+        "summary": "OAuth login initiation",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "title": "oauth_link",
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "type",
+                        "attributes"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "provider name"
+                        },
+                        "type": {
+                          "type": "string",
+                          "default": "OAuthLink"
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "required": [
+                            "url",
+                            "provider"
+                          ],
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "provider-specific URL for OAuth page"
+                            },
+                            "provider": {
+                              "type": "string",
+                              "enum": [
+                                "facebook",
+                                "google",
+                                "twitter",
+                                "apple"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "examples": {
+                  "facebook": {
+                    "value": {
+                      "data": {
+                        "id": "facebook",
+                        "type": "OAuthLink",
+                        "attributes": {
+                          "url": "https://facebook.login/blablabla",
+                          "provider": "facebook"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Invalid query parameters)"
+          },
+          "404": {
+            "description": "Not Found (Provider not found)"
+          }
+        },
+        "description": "Social media login (OAuth) require certain configs. This endpoint will resolve with appropriate reference.",
+        "operationId": "getOAuth",
+        "tags": [
+          "Authentication"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "facebook",
+                "twitter",
+                "google",
+                "apple"
+              ]
+            },
+            "in": "query",
+            "name": "provider",
+            "required": true,
+            "description": ""
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "https://client.app/facebook-signin/"
+            },
+            "in": "query",
+            "name": "callback",
+            "required": true,
+            "description": "Callback URL after authorization completed"
+          }
+        ]
+      },
+      "post": {
+        "summary": "Login / Verify OAuth",
+        "operationId": "login",
+        "description": "Allow different login provider. Will resolve in JWT refresh token & access token if valid. While targeting OAuth provider, response will includes additional information on OAuth validity.",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "local",
+                      "facebook",
+                      "google",
+                      "twitter",
+                      "apple"
+                    ]
+                  },
+                  "data": {
+                    "anyOf": [
+                      {
+                        "description": "local",
+                        "properties": {
+                          "email": {
+                            "type": "string",
+                            "format": "email"
+                          },
+                          "password": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "email",
+                          "password"
+                        ]
+                      },
+                      {
+                        "description": "provider-related data which obtained after passing thorugh the OAuth login page"
+                      }
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "provider",
+                  "data"
+                ]
+              },
+              "examples": {
+                "local": {
+                  "value": {
+                    "provider": "local",
+                    "data": {
+                      "email": "demo@rocketmail.net",
+                      "password": "yourpassword"
+                    }
+                  }
+                },
+                "facebook": {
+                  "value": {
+                    "provider": "facebook",
+                    "data": {
+                      "callback": "https://client.app/facebook-signin/",
+                      "code": "authorization-code"
+                    }
+                  }
+                },
+                "google": {
+                  "value": {
+                    "provider": "google",
+                    "data": {
+                      "callback": "https://client.app/google-signin/",
+                      "code": "authorization-code"
+                    }
+                  }
+                },
+                "twitter": {
+                  "value": {
+                    "provider": "twitter",
+                    "data": {
+                      "oauthToken": "oauth-token",
+                      "oauthVerifier": "oauth-verifier"
+                    }
+                  }
+                },
+                "apple": {
+                  "value": {
+                    "provider": "apple",
+                    "data": {
+                      "oauthKey": "oauth-key"
+                    }
+                  }
+                },
+                "facebook (pre-acquired accessToken)": {
+                  "value": {
+                    "provider": "facebook",
+                    "data": {
+                      "accessToken": "access-token"
+                    }
+                  }
+                },
+                "google (pre-acquired accessToken)": {
+                  "value": {
+                    "provider": "google",
+                    "data": {
+                      "accessToken": "access-token"
+                    }
+                  }
+                },
+                "twitter (pre-acquired accessToken)": {
+                  "value": {
+                    "provider": "twitter",
+                    "data": {
+                      "accessToken": "access-token",
+                      "accessTokenSecret": "access-token-secret"
+                    }
+                  }
+                },
+                "apple (pre-acquired idToken)": {
+                  "value": {
+                    "provider": "apple",
+                    "data": {
+                      "idToken": "id-token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": ""
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/login_existing"
+                    },
+                    {
+                      "$ref": "#/components/schemas/login_oauth"
+                    }
+                  ]
+                },
+                "examples": {
+                  "Existing user found": {
+                    "value": {
+                      "data": {
+                        "id": "123474fc-4358-47c0-8291-14599d5788cf",
+                        "type": "LoginExisting",
+                        "attributes": {
+                          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJyZWZyZXNoOjJiNDdkMTRmLWM4OWUtNGYzYi04OWI3LWUyNjFkZjE4ZGMxMiIsInN1YiI6IjI4ZGMyN2QzLThhMDgtNDY5OC1iMjRjLTIzZTIzM2M1MzNhMCIsImlhdCI6MTU4NTIyODg2OCwiZXhwIjo0NzQwOTg4ODY4LCJhdWQiOiJ1cm46aGFzaC1ydDptYmFhcyIsImlzcyI6InVybjpoYXNoLXJ0Om1iYWFzIn0.gVWNHwrLMn6l-LhJVFuiqL24EVs6i2mKfsTlc6EkKo8",
+                          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhY2Nlc3M6MmI0N2QxNGYtYzg5ZS00ZjNiLTg5YjctZTI2MWRmMThkYzEyIiwic3ViIjoiMjhkYzI3ZDMtOGEwOC00Njk4LWIyNGMtMjNlMjMzYzUzM2EwIiwiaWF0IjoxNTg1MjI4ODY4LCJleHAiOjMxNjMxMDg4NjgsImF1ZCI6InVybjpoYXNoLXJ0Om1iYWFzIiwiaXNzIjoidXJuOmhhc2gtcnQ6bWJhYXMifQ.Gl1GEokxapZ-6MgdL7qqDVeWaGBXdjL3JIhxE1M24Vs",
+                          "expiry": "2021-04-16T22:28:55.003Z",
+                          "provider": "local",
+                          "email": "registered.email@mail.org",
+                          "verified": false,
+                          "roles": [
+                            "Member"
+                          ]
+                        }
+                      },
+                      "meta": {
+                        "message": "You have been logged in"
+                      }
+                    }
+                  },
+                  "New/unlinked user": {
+                    "value": {
+                      "data": {
+                        "id": "1385982208765",
+                        "type": "LoginOAuth",
+                        "attributes": {
+                          "oauthKey": "388674fc-4358-47c0-8291-14599d5788cf",
+                          "provider": "facebook",
+                          "email": "registered.email.on.facebook@mail.org",
+                          "name": "Your Facebook Account Name"
+                        }
+                      },
+                      "meta": {
+                        "message": "Please register or link to an existing user"
+                      }
+                    }
+                  },
+                  "Apple: Existing user found": {
+                    "value": {
+                      "data": {
+                        "id": "123474fc-4358-47c0-8291-14599d5788cf",
+                        "type": "LoginExisting",
+                        "attributes": {
+                          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJyZWZyZXNoOjJiNDdkMTRmLWM4OWUtNGYzYi04OWI3LWUyNjFkZjE4ZGMxMiIsInN1YiI6IjI4ZGMyN2QzLThhMDgtNDY5OC1iMjRjLTIzZTIzM2M1MzNhMCIsImlhdCI6MTU4NTIyODg2OCwiZXhwIjo0NzQwOTg4ODY4LCJhdWQiOiJ1cm46aGFzaC1ydDptYmFhcyIsImlzcyI6InVybjpoYXNoLXJ0Om1iYWFzIn0.gVWNHwrLMn6l-LhJVFuiqL24EVs6i2mKfsTlc6EkKo8",
+                          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhY2Nlc3M6MmI0N2QxNGYtYzg5ZS00ZjNiLTg5YjctZTI2MWRmMThkYzEyIiwic3ViIjoiMjhkYzI3ZDMtOGEwOC00Njk4LWIyNGMtMjNlMjMzYzUzM2EwIiwiaWF0IjoxNTg1MjI4ODY4LCJleHAiOjMxNjMxMDg4NjgsImF1ZCI6InVybjpoYXNoLXJ0Om1iYWFzIiwiaXNzIjoidXJuOmhhc2gtcnQ6bWJhYXMifQ.Gl1GEokxapZ-6MgdL7qqDVeWaGBXdjL3JIhxE1M24Vs",
+                          "expiry": "2021-04-16T22:28:55.003Z",
+                          "provider": "apple",
+                          "real_user_status": 0,
+                          "email": "registered.email@mail.org",
+                          "verified": false,
+                          "roles": [
+                            "Member"
+                          ]
+                        }
+                      },
+                      "meta": {
+                        "message": "You have been logged in with apple account"
+                      }
+                    }
+                  },
+                  "Apple: New/unlinked user": {
+                    "value": {
+                      "data": {
+                        "id": "000185.65c796fae",
+                        "type": "LoginOAuth",
+                        "attributes": {
+                          "oauthKey": "388674fc-4358-47c0-8291-14599d5788cf",
+                          "provider": "apple",
+                          "email": "registered.email.on.apple@mail.org",
+                          "is_private_email": false,
+                          "real_user_status": 0,
+                          "name": "Your Apple Account Name"
+                        }
+                      },
+                      "meta": {
+                        "message": "Please register or link to an existing user"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Invalid request body)"
+          },
+          "404": {
+            "description": "Not Found (User not found or OAuth not valid)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Refresh access",
+        "operationId": "refreshAccess",
+        "description": "Get a new access token & refresh token pair by using current refresh token.",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "refreshToken"
+                ],
+                "properties": {
+                  "refreshToken": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "description": ""
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "title": "extended_access",
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "ID number of current record"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "ExtendedAccess"
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "required": [
+                            "refreshToken",
+                            "accessToken"
+                          ],
+                          "properties": {
+                            "refreshToken": {
+                              "type": "string",
+                              "description": "refresh token",
+                              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJyZWZyZXNoOjE2ZGRjZmZlLTNjZGItNDRlOC04ZjE4LTY4ZTgyZTFiOTRjOCIsInN1YiI6IjI4ZGMyN2QzLThhMDgtNDY5OC1iMjRjLTIzZTIzM2M1MzNhMCIsImV4cCI6NDc0MDk4ODg2OCwiaWF0IjoxNTg1MjI5MDI2LCJhdWQiOiJ1cm46aGFzaC1ydDptYmFhcyIsImlzcyI6InVybjpoYXNoLXJ0Om1iYWFzIn0.u29eMmUS4VmyDuEYBo640ojVlFeWMCgPvxpBk4nD4mc"
+                            },
+                            "accessToken": {
+                              "type": "string",
+                              "description": "access token",
+                              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhY2Nlc3M6MTZkZGNmZmUtM2NkYi00NGU4LThmMTgtNjhlODJlMWI5NGM4Iiwic3ViIjoiMjhkYzI3ZDMtOGEwOC00Njk4LWIyNGMtMjNlMjMzYzUzM2EwIiwiaWF0IjoxNTg1MjI5MDI2LCJleHAiOjMxNjMxMDkwMjYsImF1ZCI6InVybjpoYXNoLXJ0Om1iYWFzIiwiaXNzIjoidXJuOmhhc2gtcnQ6bWJhYXMifQ.WUX1NB3qsvM9ZhdQ08m_X9zdfhZBuhLVtVRgNs6Kg1I"
+                            },
+                            "expiry": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "expiration time of the access token"
+                            }
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "type",
+                        "attributes"
+                      ]
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Your access has been extended"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/vnd.api+json": {
+                "examples": {
+                  "Invalid refresh token (it's time to relogin user)": {
+                    "value": {
+                      "errors": [
+                        {
+                          "id": "1609032720113419023",
+                          "status": "401",
+                          "code": "IVREF",
+                          "title": "Invalid refresh token"
+                        }
+                      ]
+                    }
+                  },
+                  "Other bad auth conditions": {
+                    "value": {
+                      "errors": [
+                        {
+                          "id": "1609032971742549130",
+                          "status": "401",
+                          "code": "BADAUTH",
+                          "title": "Invalid user"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Begin forgot password procedure",
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "content": {
+              "application/vnd.api+json": {}
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "[non-standard]\n\nRequest to initiate password recovery procedure. (Basic Auth)",
+        "operationId": "forgotPassword",
+        "tags": [
+          "Authentication"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "email",
+            "required": true
+          }
+        ]
+      },
+      "put": {
+        "summary": "Reset password",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {},
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/profile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "Overwrite existing password, after following reset procedure. (Basic Auth)",
+        "operationId": "resetPassword",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "token",
+                  "password"
+                ]
+              }
+            }
+          },
+          "description": ""
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Content-Type",
+            "required": true
+          }
+        ]
+      },
+      "parameters": []
+    },
+    "/auth/account": {
+      "get": {
+        "summary": "Check email availability",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Check if the requested email has been registered or not.",
+        "operationId": "checkEmail",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "email",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {},
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "email",
+                          "description": "The checked email"
+                        },
+                        "type": {
+                          "type": "string",
+                          "default": "EmailAccount"
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "required": [
+                            "email",
+                            "registered"
+                          ],
+                          "properties": {
+                            "email": {
+                              "type": "string",
+                              "format": "email"
+                            },
+                            "registered": {
+                              "type": "boolean"
+                            },
+                            "verified": {
+                              "type": "boolean"
+                            },
+                            "created_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "updated_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "deactivated_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "type",
+                        "attributes"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Register new account",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/profile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "operationId": "registerAccount",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Register new user account.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "required": true,
+            "name": "Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "local",
+                      "facebook",
+                      "google",
+                      "twitter",
+                      "apple"
+                    ]
+                  },
+                  "data": {
+                    "type": "object",
+                    "required": [
+                      "email"
+                    ],
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      "password": {
+                        "type": "string"
+                      },
+                      "oauthKey": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Unique key, obtained by verifying OAuth result in POST /services/auth"
+                      },
+                      "extras": {
+                        "type": "object",
+                        "description": "Additional information. Please refer to the User columns in management console."
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "provider",
+                  "data"
+                ]
+              },
+              "examples": {
+                "local": {
+                  "value": {
+                    "provider": "local",
+                    "data": {
+                      "email": "demo@rocketmail.net",
+                      "password": "yourpassword",
+                      "extras": {
+                        "name": "Your Fullname"
+                      }
+                    }
+                  }
+                },
+                "facebook": {
+                  "value": {
+                    "provider": "facebook",
+                    "data": {
+                      "email": "demo@rocketmail.net",
+                      "oauthKey": "83a422d4-7eb4-42f4-b791-066a25e9ffea",
+                      "extras": {
+                        "name": "Your Facebook Name"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": ""
+        }
+      }
+    },
+    "/idp/auth": {
+      "get": {
+        "summary": "OAuth login initiation",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "title": "oauth_link",
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "type",
+                        "attributes"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "idp"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "IdpOAuthLink"
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "required": [
+                            "url"
+                          ],
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL for ID provider OAuth page",
+                              "example": "https://id.mbaas.id/auth/realms/abc/protocol/openid-connect/auth?client_id="
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Invalid query parameters)"
+          },
+          "500": {
+            "description": "Please check your ID provider configurations and make sure the provider is reachable."
+          }
+        },
+        "description": "Get ID provider OAuth login information.\n\nTo protect yourself against the authorization code interception attack, it is recommended to use the `code_verifier` parameter. You can use any (random) string with a minimum length of 43 characters.",
+        "operationId": "getOAuth",
+        "tags": [
+          "Identity Provider Authentication"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "https://client.app/moco-signin/"
+            },
+            "in": "query",
+            "name": "callback",
+            "required": true,
+            "description": "Callback URL after authorization completed"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 43,
+              "example": "I97qhwoZl81JZjWT-sNPm8XCkVYqma5x77HV3w_5Ndg"
+            },
+            "in": "query",
+            "name": "code_verifier",
+            "description": "PKCE code_verifier"
+          }
+        ]
+      },
+      "post": {
+        "summary": "Verify OAuth",
+        "operationId": "verifyOAuth",
+        "description": "Verify the OAuth result to get a TokenSet.\n\nIf you include the `code_verifier` parameter on initiating the OAuth login, you need to send the same value again here.",
+        "tags": [
+          "Identity Provider Authentication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "callback",
+                  "code"
+                ],
+                "properties": {
+                  "callback": {
+                    "type": "string",
+                    "description": "Callback URL after authorization completed",
+                    "example": "https://client.app/moco-signin/"
+                  },
+                  "code": {
+                    "type": "string",
+                    "description": "Authorization code",
+                    "example": "caUwZJofIpWZeDa8PRv9TDBLc0z8XPouWa0UftfjvqT"
+                  },
+                  "code_verifier": {
+                    "type": "string",
+                    "minLength": 43,
+                    "description": "PKCE code_verifier",
+                    "example": "I97qhwoZl81JZjWT-sNPm8XCkVYqma5x77HV3w_5Ndg"
+                  },
+                  "include_userinfo_claims": {
+                    "type": "boolean",
+                    "description": "Include ID provider account claims in response."
+                  }
+                }
+              }
+            }
+          },
+          "description": ""
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/idp_access"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Invalid request body)"
+          },
+          "404": {
+            "description": "Not Found (User not found or OAuth not valid)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Refresh access",
+        "operationId": "refreshAccess",
+        "description": "Get a new TokenSet by using current refresh token.",
+        "tags": [
+          "Identity Provider Authentication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "refresh_token"
+                ],
+                "properties": {
+                  "refresh_token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "description": ""
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/idp_extended_access"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/vnd.api+json": {
+                "examples": {
+                  "Invalid refresh token (it's time to relogin user)": {
+                    "value": {
+                      "errors": [
+                        {
+                          "id": "1609034181847",
+                          "status": "401",
+                          "code": "IVREF",
+                          "title": "Invalid refresh token"
+                        }
+                      ]
+                    }
+                  },
+                  "Other bad auth conditions": {
+                    "value": {
+                      "errors": [
+                        {
+                          "id": "1609033970567",
+                          "status": "401",
+                          "code": "BADREQ",
+                          "title": "root param should have required property 'access_token'"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "parameters": []
+    },
+    "/idp/auth/account": {
+      "get": {
+        "summary": "Get ID provider Account URL",
+        "tags": [
+          "Identity Provider Authentication"
+        ],
+        "description": "You can go to a dedicated page for managing your ID provider account.",
+        "operationId": "getAccountUrl",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {},
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "type",
+                        "attributes"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "idp"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "IdpAccountLink"
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "required": [
+                            "url"
+                          ],
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL for ID provider Account page",
+                              "example": "https://id.mbaas.id/auth/realms/abc/account/"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/emailverification": {
+      "get": {
+        "summary": "Confirm email ownership",
+        "responses": {
+          "307": {
+            "description": "Redirect to Client URL"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "operationId": "confirmEmail",
+        "description": "[non-standard]\n\nUser confirm the associated email as valid. Return redirect to defined Client URL.\n\nhttps://client.app/email-verification-result/?confirm=success&email=registered.email%40mail.org\n\nhttps://client.app/email-verification-result/?confirm=failed&message=Invalid%20user",
+        "tags": [
+          "Email Verification"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "token",
+            "required": true
+          }
+        ]
+      },
+      "parameters": [],
+      "post": {
+        "summary": "Resend verification email",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "required": [
+                        "email"
+                      ],
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Please confirm your email"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "operationId": "resendEmail",
+        "description": "[non-resource]\n\nResend verification email. ",
+        "tags": [
+          "Email Verification"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          },
+          "description": ""
+        }
+      }
+    },
+    "/uploadurl": {
+      "get": {
+        "summary": "Obtain presigned upload URL",
+        "tags": [
+          "Storage"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {},
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/upload_url"
+                },
+                "examples": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {}
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "Client SDK shall obtain presgined URL and perform file upload into the URL.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "filename",
+            "required": true,
+            "description": "filename and path on remote storage"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "bucket",
+            "description": "bucket name. can be ignored."
+          },
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "signed",
+            "description": "use false to obtain plain URL"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "expire",
+            "description": "url validity in minutes. default should be 5 mins"
+          }
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "getUploadUrl"
+      }
+    },
+    "/downloadurl": {
+      "get": {
+        "summary": "Obtain presigned download URL",
+        "tags": [
+          "Storage"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {},
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/download_url"
+                },
+                "examples": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {}
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "Client SDK may obtain presgined URL and perform file download from the given URL.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "fileId",
+            "required": true,
+            "description": "ID of the requested file"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "bucket",
+            "description": "bucket name. can be ignored."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "expire",
+            "description": "url validity in minutes. default should be 5 mins"
+          },
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "signed",
+            "description": "use false to obtain plain URL"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "getDownloadUrl"
+      }
+    },
+    "/event": {
+      "get": {
+        "summary": "Retrieve event channels",
+        "tags": [
+          "Asynchronous Event"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string",
+                            "default": "EventChannel"
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "required": [
+                              "channel"
+                            ],
+                            "properties": {
+                              "channel": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "Obtain a list of allowed / public event channels.",
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          }
+        ],
+        "operationId": "getEventList"
+      },
+      "post": {
+        "summary": "Submit an event",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "type",
+                        "attributes"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "ID of current event submission"
+                        },
+                        "type": {
+                          "type": "string",
+                          "default": "PublicEvent"
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "required": [
+                            "channel",
+                            "message"
+                          ],
+                          "properties": {
+                            "channel": {
+                              "type": "string",
+                              "description": "correspond with request body"
+                            },
+                            "message": {
+                              "type": "object",
+                              "description": "correspond with request body"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "Submit an event to selected channel",
+        "operationId": "submitEvent",
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string",
+                    "description": "public channel name"
+                  },
+                  "message": {
+                    "type": "object",
+                    "description": "arbitrary data associated with the event"
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "delay": {
+                        "type": "number",
+                        "description": "miliseconds"
+                      },
+                      "backoff": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "exponential",
+                              "fixed"
+                            ]
+                          },
+                          "delay": {
+                            "type": "number",
+                            "description": "in miliseconds"
+                          },
+                          "attempts": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "channel",
+                  "message"
+                ]
+              }
+            }
+          },
+          "description": ""
+        },
+        "tags": [
+          "Asynchronous Event"
+        ]
+      }
+    },
+    "/notification/{type}": {
+      "get": {
+        "summary": "Available templates",
+        "tags": [
+          "Notification"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "same as template name"
+                          },
+                          "type": {
+                            "type": "string",
+                            "default": "notificationTemplate"
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "template name (filename)"
+                              },
+                              "description": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "name": "Accept",
+            "required": true
+          }
+        ],
+        "description": "Retrieve available notification templates",
+        "operationId": "getTemplateList"
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string",
+            "enum": [
+              "email",
+              "push"
+            ]
+          },
+          "name": "type",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/notification/email": {
+      "post": {
+        "summary": "Send email",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "unix timestamp"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "email",
+                            "emailtemplate"
+                          ]
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "properties": {
+                            "from": {
+                              "type": "string"
+                            },
+                            "to": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "replyTo": {
+                              "type": "string"
+                            },
+                            "subject": {
+                              "type": "string"
+                            },
+                            "response": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "from",
+                            "to",
+                            "subject"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "type"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "operationId": "sendEmail",
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "required": true,
+            "name": "Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "oneOf": [
+                      {
+                        "description": "plain email",
+                        "properties": {
+                          "subject": {
+                            "type": "string"
+                          },
+                          "rawBody": {
+                            "type": "string"
+                          },
+                          "from": {
+                            "type": "string"
+                          },
+                          "to": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "replyTo": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "rawBody",
+                          "from",
+                          "to"
+                        ]
+                      },
+                      {
+                        "description": "based on template",
+                        "properties": {
+                          "template": {
+                            "type": "string"
+                          },
+                          "values": {
+                            "type": "object",
+                            "description": "key-value pairs correspond to the selected template"
+                          },
+                          "from": {
+                            "type": "string"
+                          },
+                          "to": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "replyTo": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "template"
+                        ]
+                      }
+                    ],
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Send email. Content can be raw or based on template.",
+        "tags": [
+          "Notification"
+        ]
+      }
+    },
+    "/notification/push": {
+      "post": {
+        "summary": "Send push notification",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "unix timestamp"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "push",
+                            "pushtemplate"
+                          ]
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "description": "corresponds to the request body",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "description": "token OR topic name"
+                            },
+                            "message": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "target",
+                            "message"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "type"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "operationId": "sendPushNotif",
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "application/vnd.api+json"
+            },
+            "in": "header",
+            "required": true,
+            "name": "Accept"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "array",
+                    "description": "topic name OR token",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "timeToLive": {
+                        "type": "number",
+                        "description": "minutes"
+                      },
+                      "priority": {
+                        "type": "string",
+                        "enum": [
+                          "normal",
+                          "high"
+                        ],
+                        "description": "override notification priority"
+                      },
+                      "sound": {
+                        "type": "string"
+                      },
+                      "icon": {
+                        "type": "string"
+                      },
+                      "badge": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "notification": {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "message": {
+                            "type": "string",
+                            "description": "raw message"
+                          },
+                          "title": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "message"
+                        ]
+                      },
+                      {
+                        "properties": {
+                          "template": {
+                            "type": "string",
+                            "description": "template name"
+                          },
+                          "values": {
+                            "type": "object",
+                            "description": "key-value pairs for selected template"
+                          },
+                          "title": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "template"
+                        ]
+                      }
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "target"
+                ]
+              }
+            }
+          },
+          "description": ""
+        },
+        "description": "Send push notification. Content can be raw or based on template.",
+        "tags": [
+          "Notification"
+        ]
+      }
+    },
+    "/availability/tables/{table}": {
+      "get": {
+        "summary": "Tables Columns that available for access",
+        "tags": [
+          "Resource Availability"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "table",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/tables_available"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/availability/customscript": {
+      "get": {
+        "summary": "Custom Script that available for access",
+        "tags": [
+          "Resource Availability"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/custom_script_available"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Authorization": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "tables_available": {
+        "title": "tables_available",
+        "description": "Tables Columns that available for access",
+        "type": "object",
+        "properties": {
+          "create": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "read": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "update": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "delete": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      },
+      "custom_script_available": {
+        "title": "custom_script_available",
+        "description": "Custom Script that available for access",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "profile": {
+        "title": "profile",
+        "description": "Known user profile",
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "attributes"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "ID number of current record"
+              },
+              "type": {
+                "type": "string",
+                "example": "Profile"
+              },
+              "attributes": {
+                "type": "object",
+                "description": "All known fields of current user. Password is omitted. At least contains following fields.",
+                "required": [
+                  "created_at",
+                  "updated_at",
+                  "roles",
+                  "email",
+                  "social_ids",
+                  "verified",
+                  "fcm_tokens",
+                  "name"
+                ],
+                "properties": {
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                  },
+                  "deactivated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": null
+                  },
+                  "roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "readOnly": true
+                    }
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "readOnly": true
+                  },
+                  "social_ids": {
+                    "type": "object",
+                    "properties": {
+                      "google": {
+                        "type": "string",
+                        "readOnly": true
+                      },
+                      "twitter": {
+                        "type": "string",
+                        "readOnly": true
+                      },
+                      "facebook": {
+                        "type": "string",
+                        "readOnly": true
+                      },
+                      "apple": {
+                        "type": "string",
+                        "readOnly": true
+                      }
+                    }
+                  },
+                  "verified": {
+                    "type": "boolean",
+                    "readOnly": true
+                  },
+                  "fcm_tokens": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "readOnly": true
+                    }
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "more_fields": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "upload_url": {
+        "title": "upload_url",
+        "description": "response for upload URL",
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "file ID"
+              },
+              "type": {
+                "type": "string",
+                "default": "uploadurl",
+                "description": "uploadurl"
+              },
+              "attributes": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "Upload the file into this presigned upload URL with PUT operation."
+                  },
+                  "expiryDate": {
+                    "type": "string",
+                    "description": "expiry date in ISO format"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "download_url": {
+        "title": "download_url",
+        "description": "response for download URL",
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "file ID"
+              },
+              "type": {
+                "type": "string",
+                "default": "downloadurl",
+                "description": "downloadurl"
+              },
+              "attributes": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "Presigned URL for requested file ID."
+                  },
+                  "expiryDate": {
+                    "type": "string",
+                    "description": "expiry date in ISO format"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "error": {
+        "title": "error",
+        "description": "Error responds",
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "description": "Error(s). Mostly contains single error entry.",
+            "items": {
+              "type": "object",
+              "description": "",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "id of current error"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "HTTP status associated to this error"
+                },
+                "code": {
+                  "type": "string",
+                  "description": "application specific error code"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "short and -readable summary of the problem"
+                },
+                "meta": {
+                  "type": "object",
+                  "description": "Additional information related to this error."
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "errors"
+        ]
+      },
+      "login_existing": {
+        "title": "login_existing",
+        "description": "If given email & password / OAuth information is known / associated in user records",
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "ID number of current record"
+              },
+              "type": {
+                "type": "string",
+                "default": "LoginExisting"
+              },
+              "attributes": {
+                "type": "object",
+                "required": [
+                  "refreshToken",
+                  "accessToken",
+                  "provider",
+                  "email",
+                  "verified",
+                  "roles"
+                ],
+                "properties": {
+                  "refreshToken": {
+                    "type": "string",
+                    "description": "refresh token"
+                  },
+                  "accessToken": {
+                    "type": "string",
+                    "description": "access token"
+                  },
+                  "expiry": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "expiration time of the access token"
+                  },
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "local",
+                      "facebook",
+                      "google",
+                      "twitter",
+                      "apple"
+                    ]
+                  },
+                  "real_user_status": {
+                    "type": "integer",
+                    "description": "Apple: indicates whether the user appears to be a real person"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "user email"
+                  },
+                  "verified": {
+                    "type": "boolean",
+                    "description": "user email verification status"
+                  },
+                  "roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "attributes"
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "additional message"
+              },
+              "code": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "login_oauth": {
+        "title": "login_oauth",
+        "description": "If given OAuth information (oauthKey) is valid but no associated user account is found.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "attributes"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "ID number of the social account"
+              },
+              "type": {
+                "type": "string",
+                "default": "LoginOAuth"
+              },
+              "attributes": {
+                "type": "object",
+                "description": "information from OAuth provider",
+                "required": [
+                  "oauthKey",
+                  "provider"
+                ],
+                "properties": {
+                  "oauthKey": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "equal to oauthKey given in request body"
+                  },
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "facebook",
+                      "google",
+                      "twitter",
+                      "apple"
+                    ]
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "email from OAuth provider"
+                  },
+                  "is_private_email": {
+                    "type": "boolean",
+                    "description": "Apple: indicates whether the email shared by the user is the proxy address"
+                  },
+                  "real_user_status": {
+                    "type": "integer",
+                    "description": "Apple: indicates whether the user appears to be a real person"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "name from OAuth provider"
+                  }
+                }
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "userinfo_claims": {
+        "title": "userinfo_claims",
+        "description": "ID provider account claims",
+        "type": "object",
+        "required": [
+          "sub",
+          "email",
+          "email_verified"
+        ],
+        "properties": {
+          "sub": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Most certainly the same value as 'id'",
+            "readOnly": true
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "readOnly": true
+          },
+          "email_verified": {
+            "type": "boolean",
+            "example": false,
+            "readOnly": true
+          },
+          "more_fields": {
+            "type": "string",
+            "readOnly": true
+          }
+        }
+      },
+      "idp_profile": {
+        "title": "idp_profile",
+        "description": "Known user profile",
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "attributes"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "ID number of current record"
+              },
+              "type": {
+                "type": "string",
+                "example": "IdpProfile"
+              },
+              "attributes": {
+                "type": "object",
+                "description": "Here we have two groups of profile fields: the central one (ID provider) and the local one.",
+                "required": [
+                  "local_profile"
+                ],
+                "properties": {
+                  "userinfo_claims": {
+                    "$ref": "#/components/schemas/userinfo_claims"
+                  },
+                  "local_profile": {
+                    "type": "object",
+                    "required": [
+                      "created_at",
+                      "updated_at",
+                      "roles",
+                      "email",
+                      "verified",
+                      "fcm_tokens",
+                      "name"
+                    ],
+                    "properties": {
+                      "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                      },
+                      "deactivated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": null
+                      },
+                      "roles": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "readOnly": true
+                        }
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "readOnly": true
+                      },
+                      "verified": {
+                        "type": "boolean",
+                        "readOnly": true
+                      },
+                      "fcm_tokens": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "readOnly": true
+                        }
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "more_fields": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "idp_access": {
+        "title": "idp_access",
+        "description": "ID provider OAuth result",
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "ID number of current record"
+              },
+              "type": {
+                "type": "string",
+                "example": "IdpAccess"
+              },
+              "attributes": {
+                "type": "object",
+                "required": [
+                  "tokenset",
+                  "local_profile"
+                ],
+                "properties": {
+                  "tokenset": {
+                    "type": "object",
+                    "required": [
+                      "access_token",
+                      "refresh_token"
+                    ],
+                    "properties": {
+                      "access_token": {
+                        "type": "string",
+                        "example": "shXG4cFSEbbjP55RGaajzhx6EQTyKW6sn94i2rnvyN4"
+                      },
+                      "expiry": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "refresh_token": {
+                        "type": "string",
+                        "example": "RJDOtIdx_1puWEcQpsqjq1UcXR8a3FfV2B3XV_BXm60"
+                      },
+                      "token_type": {
+                        "type": "string",
+                        "example": "Bearer"
+                      }
+                    }
+                  },
+                  "userinfo_claims": {
+                    "$ref": "#/components/schemas/userinfo_claims"
+                  },
+                  "local_profile": {
+                    "type": "object",
+                    "required": [
+                      "created"
+                    ],
+                    "properties": {
+                      "created": {
+                        "type": "boolean",
+                        "description": "local profile existence"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "user email"
+                      },
+                      "verified": {
+                        "type": "boolean",
+                        "description": "user email verification status"
+                      },
+                      "roles": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "attributes"
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "You have been granted access"
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "idp_extended_access": {
+        "title": "idp_extended_access",
+        "description": "ID provider extended access",
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "ID number of current record"
+              },
+              "type": {
+                "type": "string",
+                "example": "IdpExtendedAccess"
+              },
+              "attributes": {
+                "type": "object",
+                "required": [
+                  "tokenset"
+                ],
+                "properties": {
+                  "tokenset": {
+                    "type": "object",
+                    "required": [
+                      "access_token",
+                      "refresh_token"
+                    ],
+                    "properties": {
+                      "access_token": {
+                        "type": "string",
+                        "example": "shXG4cFSEbbjP55RGaajzhx6EQTyKW6sn94i2rnvyN4"
+                      },
+                      "expiry": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "refresh_token": {
+                        "type": "string",
+                        "example": "RJDOtIdx_1puWEcQpsqjq1UcXR8a3FfV2B3XV_BXm60"
+                      },
+                      "token_type": {
+                        "type": "string",
+                        "example": "Bearer"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "attributes"
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Your access has been extended"
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      }
+    }
+  }
+}

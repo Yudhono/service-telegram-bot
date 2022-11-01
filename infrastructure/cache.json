@@ -1,0 +1,20 @@
+{
+  "development": {
+    "host": "127.0.0.1",
+    "port": 6379,
+    "password": "redis-bottel-j8v",
+    "provider": "redis"
+  },
+  "test": {
+    "host": "",
+    "port": 0,
+    "password": "",
+    "provider": "redis"
+  },
+  "production": {
+    "host": "",
+    "port": 0,
+    "password": "",
+    "provider": "redis"
+  }
+}

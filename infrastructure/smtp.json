@@ -1,0 +1,32 @@
+{
+  "development": {
+    "host": "smtp.googlemail.com",
+    "port": 465,
+    "secure": true,
+    "auth": {
+      "user": "ggege0998@gmail.com",
+      "pass": "pass-word-123"
+    },
+    "defaultFrom": "MBaaS dev <aaa@mail.com>"
+  },
+  "test": {
+    "host": "test",
+    "port": 0,
+    "secure": false,
+    "auth": {
+      "user": "",
+      "pass": ""
+    },
+    "defaultFrom": "MBaaS test <aaa@mail.com>"
+  },
+  "production": {
+    "host": "prod",
+    "port": 0,
+    "secure": false,
+    "auth": {
+      "user": "",
+      "pass": ""
+    },
+    "defaultFrom": "MBaaS <aaa@mail.com>"
+  }
+}

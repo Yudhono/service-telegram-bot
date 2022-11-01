@@ -1,0 +1,22 @@
+{
+  "development": {
+    "postgres": {
+      "database": "platform-bottel-j8v",
+      "host": "127.0.0.1",
+      "password": "R00Tpostgres",
+      "user": "postgres"
+    }
+  },
+  "test": {
+    "postgres": {
+      "user": "postgres",
+      "password": "test"
+    }
+  },
+  "production": {
+    "postgres": {
+      "user": "postgres",
+      "password": "prod"
+    }
+  }
+}

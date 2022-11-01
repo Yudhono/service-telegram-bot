@@ -1,0 +1,1 @@
+{"policy":{"role":[]},"trigger":{"type":"EVENT","schedule":"0 */1 * * * *"},"enable":false,"version":1}

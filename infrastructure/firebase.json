@@ -1,0 +1,26 @@
+{
+  "development": {
+    "database": "https://test-project-8dc3c.firebaseio.com",
+    "credential": {
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "client_email": "firebase-adminsdk-3884t@test-project-8dc3c.iam.gserviceaccount.com",
+      "client_id": "117022288505938579156",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-3884t%40test-project-8dc3c.iam.gserviceaccount.com",
+      "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCYRoV0Is/cylGV\nyZIeE8f3umcbK4Mm2+8LCd5+tSAut6yhsCQxNIiOuQsHIBqHpAZ8cjUyiIYW7HVE\nnPeOiVaNBZ4/6ADSQ1WMxkRs++B7U5dxDGMOTPHL1+IZoDRpBwo9WcGOcefmuUxI\nK5quDkfX4gvSt+1VCz9oYVfoz1hUKd+RTZqV/qVkecVC9Mb/SbAQezhDmalRslbE\n9M8HwZPCeEizR9EP8BuiRlVfpyuIwcsbNl228m2ji+5r3LgziVbCGIHuGA9JmGwY\nmcFk3qXV/o9RWaQiz7YydNxwNZ6oDaEtEEV2y+tr90cfGs1W0rXP87+gTV8ou+MA\n8/8+M0VvAgMBAAECggEAAzcMW63drqWbTSrPo3chpzWjAw9YBwq1hHAMAXSoiv2R\nlWsnI6s3+nw/4w6GxBHIZnmkBuU1oFrguCo9dDlETKW8OB3MlD2CTmUXQVsC29SH\n44XYusIQ7tyOTdU0lhN+4CaHfPVWgwGrJL2+JJ09+UbKa7bUOd6+OXsPEWX86u+P\nbtlq21RwFbNb3yzRTSPV3uxETHCc/2TrTgM4KOvYD636NBZyT2oJsIRQkZrFHO/q\nvQQtBMmfViT9Q4fO0bxHOFUdFxYJM6jEBz9FiyPyVHTaIkWMEuILuJpirpqDnRus\nBsuW4wBRMApG832TZ3pkScCrt+ldu8WlawR7Ui/KxQKBgQDUc/6I8chSlh7Gjj+S\nOOCT2SYmnnjW6wl8k3KhTI54cWq8g9FFrbUjcHfB4XpyyFGUsGElS+1oZ6lxfwIo\nsQ7825IsLc/dG8eYf3O+1UjvdBEapapAj8pjXnNOyPoU2NjFsYbZFWDNiVpRzygS\ntxHoL7twjVFAHyr4IcaJ4h0vAwKBgQC3fNbdsze1Vf9h685fPjLTcMC5FDTs95zd\nIRM2yg4px7ZDL7s4lHhysugvMdm0Mvkk1ckFi/ZmbSq7u5voFcQMo0kS1SV9ersb\nyYdm0PN7ShU8JTQ39ioolL/gilDnZweBNAIu+iA+qJmhMZU08YdhywoGQcuokVAE\ncnJP/kh+JQKBgQCUwaM3wBPDv9lMrc1VVP3qh+FuqQdzdJ7v204oIrKfIsrZtHKT\nl019wwIXfwl91UVKFzXuJ3vT3sGF9qhMVa1o31U6GdmxuAHJhXRF6pFnGJ3hSp4r\nFoNfkIKsZ4yzjCI8SlFhLtbZE5NqNOKaOBURvlpANLLvcuNjWkLpyKkmgQKBgDM9\nBE9ipZLY0fkJPVbxaoYK/XZxgxoNR1ukydXJ9MyL/YSjhpeVNlFpTlcnh5C/jz1P\nCdSnsgYGRCGqkS3tLhMNYfGFXfO9WxS2YT4/6U4rcOSbywo5jqpIZ5CPb2o/JiRZ\nXqa5qFl3AXe2/eCL9e9EIKeAphuLgJnNT8iwzJOVAoGBAM+FTlSbhfEol2fTmq0n\nYm7OdPwWHPEc9JUkfrPmbatDsXQINYc/3kzYSsPF/YKpl8C3FlxpGgyJHiyyPnie\nwsI66ua5rHpt1M8HC1K7OABz6xz7pPXbYBwrEB2XPN/6oA1/PLGEqpFQkI8toWiH\nLtkT0aPJ6b0/7BMZMBz2rnnq\n-----END PRIVATE KEY-----\n",
+      "private_key_id": "8abacdb81f1117fd95c787afaa0e38e8d5dd87da",
+      "project_id": "test-project-8dc3c",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "type": "service_account"
+    },
+    "maxClientsPerUser": 10
+  },
+  "test": {
+    "credential": {},
+    "database": ""
+  },
+  "production": {
+    "credential": {},
+    "database": ""
+  }
+}

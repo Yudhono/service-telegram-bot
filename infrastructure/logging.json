@@ -1,0 +1,14 @@
+{
+  "development": {
+    "level": "error",
+    "pretty": false
+  },
+  "test": {
+    "level": "info",
+    "pretty": false
+  },
+  "production": {
+    "level": "debug",
+    "pretty": false
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "title": "Hi <%= name %>, this <%= title %>",
+    "template": "this notification from <%= server %>",
+    "options": {
+      "priority": "high",
+      "timeToLive": 360,
+      "icon": "https://www.saremcotech.com/wp-content/uploads/2018/07/firebase-icon.png"
+    }
+}

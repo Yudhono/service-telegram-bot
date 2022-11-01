@@ -1,0 +1,11 @@
+{
+  "development": {
+    "argon2MemoryCost": 0
+  },
+  "test": {
+    "argon2MemoryCost": 0
+  },
+  "production": {
+    "argon2MemoryCost": 0
+  }
+}

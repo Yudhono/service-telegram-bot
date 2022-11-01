@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .verify {
+        width: 70%;
+        height: 30px;
+        background-color: #d10000;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        margin: 30px 70px 30px 70px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div>
+        Hello <%= name %> (<%= email %>)
+      </div>
+      <div>
+        You've successfully signup an account. To complete your registration, we
+        just need to verify your email address. Please click the button below:
+      </div>
+      <div>
+        <a href="<%= link %>"><button class="verify">VERIFY EMAIL</button></a>
+      </div>
+      <div>
+        Or copy and paste this URL into your browser address bar:
+      </div>
+      <div>
+        <%= link %>
+      </div>
+      <div>
+        and get started straight away!
+      </div>
+    </div>
+  </body>
+</html>

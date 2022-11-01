@@ -1,0 +1,1 @@
+{"version":1,"enable":true,"trigger":{"type":"EVENT","entity":"custom","queue":"pick-your-queue"},"policy":{"role":["Administrator"]}}

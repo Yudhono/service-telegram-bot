@@ -1,0 +1,13 @@
+{
+  "development": {
+    "url": "mqtt://localhost:1883",
+    "username": "vernemq",
+    "password": "mqtt123"
+  },
+  "test": {
+    "password": "test"
+  },
+  "production": {
+    "password": "prod"
+  }
+}

@@ -1,0 +1,25 @@
+
+## query parameter
+type query {
+#  name: String
+#  number: Int
+}
+#
+## request body
+type body {
+#  data: String!
+#  test: test!
+#  gender: gender!
+#  coba: oneOfTest
+}
+#
+#type test {
+#  nama: String!
+#}
+#
+#enum gender {
+#  P
+#  L
+#}
+#
+#union oneOfTest = String | Int

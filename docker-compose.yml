@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:10
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=R00Tpostgres
+      - POSTGRES_DB=platform-bottel-j8v
+  redis:
+    image: "redis:5.0-alpine"
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass redis-bottel-j8v
+  minio:
+    image: "minio/minio"
+    ports:
+      - 9000:9000
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio-bottel-j8v
+    command: server /data
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    hostname: "rabbit"
+    ports:
+      - 15672:15672
+      - 5672:5672
+    labels:
+      NAME: "rabbitmq"
+  vernemq:
+    image: "vernemq/vernemq"
+    hostname: "vernemq"
+    ports:
+      - 1883:1883
+    labels:
+      NAME: "vernemq"
+    environment:
+      DOCKER_VERNEMQ_ACCEPT_EULA: "yes"
+      DOCKER_VERNEMQ_USER_vernemq: "mqtt123"

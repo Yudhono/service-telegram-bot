@@ -1,0 +1,23 @@
+{
+  "development": {
+    "endPoint": "127.0.0.1",
+    "port": 9000,
+    "accessKey": "minio",
+    "secretKey": "minio-bottel-j8v",
+    "useSSL": false
+  },
+  "test": {
+    "endPoint": "",
+    "port": "",
+    "accessKey": "",
+    "secretKey": "",
+    "useSSL": false
+  },
+  "production": {
+    "endPoint": "",
+    "port": "",
+    "accessKey": "",
+    "secretKey": "",
+    "useSSL": false
+  }
+}

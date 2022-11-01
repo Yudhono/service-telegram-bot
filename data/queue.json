@@ -1,0 +1,20 @@
+{
+  "queue": [
+    {
+      "name": "NubianIbex1",
+      "publicAccess": "false",
+      "type": "jobQueue"
+    },
+    {
+      "name": "NubianIbex2",
+      "publicAccess": "true",
+      "type": "jobQueue"
+    },
+    {
+      "name": "logs",
+      "publicAccess": true,
+      "type": "jobQueue",
+      "associatedScript": null
+    }
+  ]
+}

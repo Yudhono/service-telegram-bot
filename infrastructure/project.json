@@ -1,0 +1,10 @@
+{
+  "name": "bot-telegram",
+  "namespace": "L9GKW51V",
+  "description": "",
+  "envList": [
+    "development",
+    "production",
+    "test"
+  ]
+}

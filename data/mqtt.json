@@ -1,0 +1,11 @@
+{
+  "mqtt": [
+    {
+      "topic": "Dogs1"
+    },
+    {
+      "topic": "Hedgehogs/#2",
+      "wildcard": true
+    }
+  ]
+}

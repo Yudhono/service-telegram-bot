@@ -1,0 +1,20 @@
+{
+  "development": {
+    "node": "",
+    "auth": {
+      "apiKey": ""
+    }
+  },
+  "test": {
+    "node": "",
+    "auth": {
+      "apiKey": ""
+    }
+  },
+  "production": {
+    "node": "",
+    "auth": {
+      "apiKey": ""
+    }
+  }
+}

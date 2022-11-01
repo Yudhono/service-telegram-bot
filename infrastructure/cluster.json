@@ -1,0 +1,19 @@
+{
+  "development": {
+    "autoScale": {
+      "enabled": false,
+      "upperLimit": 100,
+      "lowerLimit": 1,
+      "maxOSCpu": 100,
+      "maxOSMemory": 100
+    },
+    "pubsubrpc": {
+      "min": 1,
+      "max": 100
+    },
+    "tables": {
+      "min": 1,
+      "max": 100
+    }
+  }
+}

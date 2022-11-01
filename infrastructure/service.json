@@ -1,0 +1,6 @@
+{
+  "rabbitmq": false,
+  "s3": true,
+  "elasticsearch": false,
+  "mqtt": false
+}

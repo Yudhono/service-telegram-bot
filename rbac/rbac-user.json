@@ -1,0 +1,23 @@
+{
+  "roles": ["Administrator", "Anonymous"],
+  "defaultRoles": [],
+  "auth": {
+    "audience": "L9GKW51V",
+    "issuer": "admin",
+    "refreshExpiresIn": 10080,
+    "accessExpiresIn": 15,
+    "jwtAlgorithm": "RS256"
+  },
+  "socialLogins": {
+    "twitterConsumerKey": "",
+    "twitterConsumerSecret": "",
+    "googleClientId": "",
+    "googleClientSecret": "",
+    "facebookAppId": "",
+    "facebookAppSecret": "",
+    "appleTeamId": "",
+    "appleClientId": "",
+    "appleKeyId": "",
+    "appleCallbacks": ["http://localhost:8080/apple-signin/"]
+  }
+}

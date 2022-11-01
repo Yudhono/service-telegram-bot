@@ -1,0 +1,21 @@
+{
+  "development": {
+    "enabled": false,
+    "type": "keycloak",
+    "keycloak": {
+      "baseUrl": "http://localhost:8765",
+      "realm": "platform",
+      "clientId": "app1",
+      "clientSecret": "7a9232fd-fdb8-49fb-a6f3-92d9f0832ba8",
+      "additionalScopes": ["address", "phone"]
+    }
+  },
+  "test": {
+    "enabled": false,
+    "type": "keycloak"
+  },
+  "production": {
+    "enabled": false,
+    "type": "keycloak"
+  }
+}

@@ -1,0 +1,5 @@
+{
+    "sender": "MBASS-SERVER <kevinplevi@gmail.com>",
+    "replyTo": "REPLYTARGET <frznkvn@gmail.com>",
+    "subject": "Hi <%= name %>, this <%= title %>"
+}
