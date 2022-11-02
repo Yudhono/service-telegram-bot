@@ -19,17 +19,42 @@ const checkingCase = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     let messageRetrieved = null;
     bot.onText(/\/ask (.+)/, (msg, match) => __awaiter(void 0, void 0, void 0, function* () {
         messageRetrieved = msg;
-        const resp = "Pertanyaan anda telah dibuatkan tiket dengan nomor tiket: 1";
-        const result = yield ctx.moco.tables.create({
-            table: "message",
-            data: {
-                ticket_id: "fa8276ab-aba7-475c-a64d-6458df936087",
-                telegram_message: messageRetrieved,
-            },
+        console.log(JSON.stringify(msg));
+        const checkTicket = yield ctx.moco.tables.findAll({
+            table: "ticket",
+            orderBy: [
+                {
+                    order: "desc",
+                    column: "nomor_ticket"
+                }
+            ],
+            limit: 1
         });
-        console.log("result", result);
-        bot.sendMessage(msg.chat.id, resp);
-        bot.sendMessage(msg.chat.id, "Kami check terlebih dahulu ya. Mohon ditunggu", { reply_to_message_id: msg.message_id });
+        if (!msg.chat.title) {
+            bot.sendMessage(msg.chat.id, "Hai, Bot tidak menanggapi via personal, silahkan chat via group. Terimakasih");
+        }
+        else {
+            let noTicket = checkTicket.count + 1;
+            const createTicket = yield ctx.moco.tables.create({
+                table: "ticket",
+                data: {
+                    nomor_ticket: noTicket,
+                    telegram_chat_id: msg.chat.id,
+                    telegram_group_name: msg.chat.title,
+                    telegram_user_id: msg.from.username,
+                    status: true
+                },
+            });
+            const insertMessage = yield ctx.moco.tables.create({
+                table: "message",
+                data: {
+                    ticket_id: createTicket.id,
+                    telegram_message: JSON.stringify(msg)
+                },
+            });
+            const resp = `Pertanyaan anda telah dibuatkan ticket dengan nomor ticket: ${noTicket}`;
+            bot.sendMessage(msg.chat.id, resp, { reply_to_message_id: msg.message_id });
+        }
     }));
     return {
         data: messageRetrieved,

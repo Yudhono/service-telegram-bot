@@ -6,28 +6,56 @@ const bot = new TelegramBot(token, { polling: true });
 
 const checkingCase = async (ctx: SDK.Context): Promise<any> => {
   let messageRetrieved = null;
+  
   bot.onText(/\/ask (.+)/, async (msg: any, match: any) => {
     messageRetrieved = msg;
-    //create a ticket (insert to table ticket and table message)
-    const resp = "Pertanyaan anda telah dibuatkan tiket dengan nomor tiket: 1";
+    console.log(JSON.stringify(msg))
 
-    const result = await ctx.moco.tables.create({
-      table: "message",
-      data: {
-        ticket_id: "fa8276ab-aba7-475c-a64d-6458df936087",
-        telegram_message: messageRetrieved,
-      },
+        
+    const checkTicket = await ctx.moco.tables.findAll({
+      table:"ticket",
+      orderBy:[
+        {
+        order:"desc",
+        column:"nomor_ticket"
+        }
+      ],
+     limit:1
+    
     });
-    console.log("result", result);
+    if(!msg.chat.title){
+      bot.sendMessage(msg.chat.id, 
+        "Hai, Bot tidak menanggapi via personal, silahkan chat via group. Terimakasih"
+        );
+    }else{
+      let noTicket = checkTicket.count+1;
+      const createTicket = await ctx.moco.tables.create({
+        table:"ticket",
+        data:{
+          nomor_ticket:noTicket,
+          telegram_chat_id:msg.chat.id,
+          telegram_group_name:msg.chat.title,
+          telegram_user_id:msg.from.username,
+          status:true
+        },
+        
+      });
 
-    bot.sendMessage(msg.chat.id, resp);
-
-    //send first respon(insert to table message)
-    bot.sendMessage(
-      msg.chat.id,
-      "Kami check terlebih dahulu ya. Mohon ditunggu",
-      { reply_to_message_id: msg.message_id }
-    );
+      const insertMessage = await ctx.moco.tables.create(
+        {
+          table:"message",
+          data:{
+            ticket_id:createTicket.id,
+            telegram_message:JSON.stringify(msg)
+          },
+          
+        });
+        
+      const resp = `Pertanyaan anda telah dibuatkan ticket dengan nomor ticket: ${noTicket}`;
+  
+      bot.sendMessage(msg.chat.id, resp,{reply_to_message_id:msg.message_id});
+    }
+    
   });
 
   return {
@@ -35,5 +63,6 @@ const checkingCase = async (ctx: SDK.Context): Promise<any> => {
     error: null,
   };
 };
+
 
 export default checkingCase;
