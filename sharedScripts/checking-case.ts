@@ -41,15 +41,15 @@ const checkingCase = async (ctx: SDK.Context): Promise<any> => {
         
       });
 
-      const insertMessage = await ctx.moco.tables.create(
-        {
-          table:"message",
-          data:{
-            ticket_id:createTicket.id,
-            telegram_message:JSON.stringify(msg)
-          },
+      // const insertMessage = await ctx.moco.tables.create(
+      //   {
+      //     table:"message",
+      //     data:{
+      //       ticket_id:createTicket.id,
+      //       telegram_message:JSON.stringify(msg)
+      //     },
           
-        });
+      //   });
         
       const resp = `Pertanyaan anda telah dibuatkan ticket dengan nomor ticket: ${noTicket}`;
   

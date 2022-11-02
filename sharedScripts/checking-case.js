@@ -45,13 +45,6 @@ const checkingCase = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
                     status: true
                 },
             });
-            const insertMessage = yield ctx.moco.tables.create({
-                table: "message",
-                data: {
-                    ticket_id: createTicket.id,
-                    telegram_message: JSON.stringify(msg)
-                },
-            });
             const resp = `Pertanyaan anda telah dibuatkan ticket dengan nomor ticket: ${noTicket}`;
             bot.sendMessage(msg.chat.id, resp, { reply_to_message_id: msg.message_id });
         }
