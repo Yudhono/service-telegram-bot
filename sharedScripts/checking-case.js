@@ -17,8 +17,9 @@ const token = process.env.TOKEN;
 const bot = new node_telegram_bot_api_1.default(token, { polling: true });
 const checkingCase = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     let messageRetrieved = null;
-    bot.onText(/\/ask (.+)/, (msg, match) => __awaiter(void 0, void 0, void 0, function* () {
+    bot.onText(/\/(ask|help) (.+)/, (msg, match) => __awaiter(void 0, void 0, void 0, function* () {
         messageRetrieved = msg;
+        console.log(match);
         console.log(JSON.stringify(msg));
         const checkTicket = yield ctx.moco.tables.findAll({
             table: "ticket",
@@ -45,10 +46,28 @@ const checkingCase = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
                     status: true
                 },
             });
+            const insertMessage = yield ctx.moco.tables.create({
+                table: "message",
+                data: {
+                    ticket_id: createTicket.id,
+                    telegram_message: [
+                        JSON.stringify(msg)
+                    ]
+                },
+            });
             const resp = `Pertanyaan anda telah dibuatkan ticket dengan nomor ticket: ${noTicket}`;
-            bot.sendMessage(msg.chat.id, resp, { reply_to_message_id: msg.message_id });
+            bot.sendMessage(msg.chat.id, resp);
         }
     }));
+    bot.on('message', (msg) => {
+        console.log(msg);
+        const checkMsg = msg.chat.reply_to_message_id;
+        if (!msg.text.startsWith('/') && !checkMsg) {
+            bot.sendMessage(msg.chat.id, "Mohon ditunggu, case tersebut sedang dalam pengecekan\nAkan kami informasikan jika sudah ada updatenya", {
+                reply_to_message_id: msg.message_id
+            });
+        }
+    });
     return {
         data: messageRetrieved,
         error: null,

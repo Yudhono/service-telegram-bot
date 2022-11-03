@@ -7,8 +7,9 @@ const bot = new TelegramBot(token, { polling: true });
 const checkingCase = async (ctx: SDK.Context): Promise<any> => {
   let messageRetrieved = null;
   
-  bot.onText(/\/ask (.+)/, async (msg: any, match: any) => {
+  bot.onText(/\/(ask|help) (.+)/, async (msg: any, match: any) => {
     messageRetrieved = msg;
+    console.log(match)
     console.log(JSON.stringify(msg))
 
         
@@ -41,22 +42,42 @@ const checkingCase = async (ctx: SDK.Context): Promise<any> => {
         
       });
 
-      // const insertMessage = await ctx.moco.tables.create(
-      //   {
-      //     table:"message",
-      //     data:{
-      //       ticket_id:createTicket.id,
-      //       telegram_message:JSON.stringify(msg)
-      //     },
+      const insertMessage = await ctx.moco.tables.create(
+        {
+          table:"message",
+          data:{
+            ticket_id:createTicket.id,
+            telegram_message:[
+              JSON.stringify(msg)
+            ]
+          },
           
-      //   });
+        });
         
       const resp = `Pertanyaan anda telah dibuatkan ticket dengan nomor ticket: ${noTicket}`;
   
-      bot.sendMessage(msg.chat.id, resp,{reply_to_message_id:msg.message_id});
+      bot.sendMessage(msg.chat.id, resp);
     }
     
   });
+  bot.on('message',(msg:any)=>{
+    console.log(msg); 
+    const checkMsg = msg.chat.reply_to_message_id;
+    if(!msg.text.startsWith('/')&&!checkMsg){
+      bot.sendMessage(msg.chat.id,
+        "Mohon ditunggu, case tersebut sedang dalam pengecekan\nAkan kami informasikan jika sudah ada updatenya",{
+          reply_to_message_id:msg.message_id
+        })
+
+        // const insertMessage = await ctx.moco.tables.create({
+        //   table:"message",
+        //   data:{
+        //     ticket_id:"sdkgnkjsn",
+        //     telegram_message:JSON.stringify(msg)
+        //   }
+        // })
+    }
+  })
 
   return {
     data: messageRetrieved,

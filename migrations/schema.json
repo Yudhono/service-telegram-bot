@@ -6,11 +6,23 @@
     },
     {
       "name": "ticket",
-      "relationships": []
+      "relationships": [
+        {
+          "name": "message_ticket_id_list",
+          "foreignKey": "fk_message_ticket_id_ticket_id",
+          "type": "hasMany"
+        }
+      ]
     },
     {
       "name": "message",
-      "relationships": []
+      "relationships": [
+        {
+          "name": "ticket_id_data",
+          "foreignKey": "fk_message_ticket_id_ticket_id",
+          "type": "belongsTo"
+        }
+      ]
     }
   ]
 }
