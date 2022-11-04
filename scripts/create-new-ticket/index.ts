@@ -6,7 +6,7 @@ async function handler(ctx: SDK.Context): Promise<SDK.ReturnCtx> {
   console.log("checkingCase", res);
 
   return {
-    data: "test-custom",
+    data: "Sending to checking case",
     error: null,
   };
 }

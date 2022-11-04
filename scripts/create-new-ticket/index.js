@@ -18,7 +18,7 @@ function handler(ctx) {
         const res = yield checking_case_1.default(ctx);
         console.log("checkingCase", res);
         return {
-            data: "test-custom",
+            data: "Sending to checking case",
             error: null,
         };
     });
