@@ -24,7 +24,7 @@ const checkingCase = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
             filter: ctx.moco
                 .composeFilter()
                 .eq("telegram_username", msg.from.username)
-                .toString()
+                .toString(),
         });
         if (!checkUser) {
             bot.sendMessage(msg.chat.id, "Username anda masih belum terdaftar. Mohon hubungi administrator!\nTerimakasih");
@@ -35,8 +35,8 @@ const checkingCase = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
                 orderBy: [
                     {
                         order: "desc",
-                        column: "nomor_ticket"
-                    }
+                        column: "nomor_ticket",
+                    },
                 ],
                 limit: 1,
             });
@@ -52,40 +52,42 @@ const checkingCase = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
                         telegram_chat_id: msg.chat.id,
                         telegram_group_name: msg.chat.title,
                         telegram_user_id: msg.from.username,
-                        status: true
+                        status: true,
                     },
                 });
                 const insertMessage = yield ctx.moco.tables.create({
                     table: "message",
                     data: {
                         ticket_id: createTicket.id,
-                        telegram_message: msg
+                        telegram_message: msg,
                     },
                 });
                 const resp = `Pertanyaan anda telah dibuatkan ticket dengan nomor ticket: ${noTicket}`;
-                bot.sendMessage(msg.chat.id, resp, { reply_to_message_id: msg.message_id });
+                bot.sendMessage(msg.chat.id, resp, {
+                    reply_to_message_id: msg.message_id,
+                });
             }
         }
     }));
-    bot.on('message', (msg) => __awaiter(void 0, void 0, void 0, function* () {
-        const checkMsg = msg.reply_to_message.message_id;
+    bot.on("message", (msg) => __awaiter(void 0, void 0, void 0, function* () {
+        const checkMsg = msg.reply_to_message_id;
         console.log(checkMsg);
         console.log(msg.message_id);
-        if (!msg.text.startsWith('/') && !checkMsg) {
+        if (!msg.text.startsWith("/") && !checkMsg) {
             bot.sendMessage(msg.chat.id, "Mohon ditunggu, case tersebut sedang dalam pengecekan\nAkan kami informasikan jika sudah ada updatenya", {
-                reply_to_message_id: msg.message_id
+                reply_to_message_id: msg.message_id,
             });
             const checkTicket = yield ctx.moco.tables.raw({
-                query: `SELECT * FROM message WHERE (telegram_message::json ->> 'message_id')::numeric= 
-         ${msg.reply_to_message.message_id}`
+                query: `SELECT * FROM message WHERE (telegram_message::json ->> 'message_id')::numeric=
+         ${msg.reply_to_message.message_id}`,
             });
             console.log(checkTicket);
             const insertMessage = yield ctx.moco.tables.create({
                 table: "message",
                 data: {
                     ticket_id: checkTicket[0].ticket_id,
-                    telegram_message: msg
-                }
+                    telegram_message: msg,
+                },
             });
         }
     }));

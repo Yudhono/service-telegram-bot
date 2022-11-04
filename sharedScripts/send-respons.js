@@ -8,13 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
-const token = process.env.TOKEN;
-const bot = new node_telegram_bot_api_1.default(token, { polling: true });
 const sendRespons = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.default = sendRespons;
